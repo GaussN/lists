@@ -1,6 +1,18 @@
-class ListIsNotEmpty(Exception):
-    """List is not empty."""
+class ListsError(Exception):
+    pass
 
 
-class InvalidListname(OSError):
-    """os file naming restriction."""
+class InvalidListname(ListsError):
+    pass
+
+
+class ListIsNotEmpty(ListsError):
+    pass
+
+
+class ListNotFound(ListsError):
+    pass
+
+
+class ListAlreadyExists(ListsError):
+    pass

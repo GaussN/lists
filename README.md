@@ -1,44 +1,47 @@
-# lists 
+# lists (sqlite)
 
 ## Brief description
 Local list database.
 
 ## Description
-Interface to files with data in list view.
+Interface for storing named lists in sqlite
 
 ### Classes
 
 #### ListsManager
 ##### Methods
-`__init__(self, lists_path: str, name_normalize_policy: Literal)`
+`__init__(self, lists_path: str)`
     
     params: 
         `lists_path` - forlder contains list files.
-        `name_normalize_policy` - see [listname normalizer](#_listnamenormalizer)
+    raises:
+        `FileNotFoundError`.
 
-`__getitem__(self, list_name: str) -> ListManager`
+`__getitem__(self, list_name: LiteralString) -> ListManager`
 
-    params:
-        `items` - list name.
     raises: 
-        `KeyError` - if list with given name doesn't exists.
-    returns:
-        `ListManager` for given list.
+        `ListNotFound`.
 
-`.get(self, item: str) -> Optional[ListManager]`
+`.get(self, list_name: LiteralString) -> Optional[ListManager]`
 
     Does the same as `__getitem__` but doesn't raise exception.
     Returns None if list doesn't exists instead.
 
-`.create(self, list_name: str, raise_if_exists: bool = False) -> ListManager`
+`.create(self, list_name: LiteralString, raise_if_exists: bool = False) -> ListManager`
 
-    Returns the created list or, if `raise_if_exists` is set to `False`, existing list, otherwise raises `FileExistsError`.
+    Returns the created list or, if `raise_if_exists` is set to `False`, existing list, otherwise raises `ListAlreadyExists`.
 
-`.remove(self, list_name: str, force: bool = False, raise_if_not_exists: bool = False) -> None`
+`.remove(self, list_name: LiteralString, force: bool = False, raise_if_not_exists: bool = False) -> None`
 
     raises:
         `ListIsNotEmpty` - if the list contains some content and `force` is set False.
-        `FileNotFoundError` - if `raise_if_not_exists` is set True and list file doesn't exists.
+        `ListNotFound` - if `raise_if_not_exists` is set True and list file doesn't exists.
+
+##### Raises
+`InvalidListname`
+
+    Can be raised in any method if `list_name` is equals to the `__meta_table` variable(`__lists` by default).
+
 
 #### ListManager
 ##### Methods
@@ -53,25 +56,7 @@ Interface to files with data in list view.
     Returns `Fasle` if the item is not in the list.
 
 ##### Properties
-`.list_path`
-
 `.list_name`
-
-#### _ListnameNormalizer
-Check if list name contains characters or names prohibited by the OS 
-
-For *nix: `/`, `\0` 
-
-For Windows: `<` , `>` , `:` , `"` , `/` , `\` , `?` , `*` , `|` , `CON` , `PRN` , `AUX` , `NUL` , `COM[0-9]` , `LPT[0-9]`
-
-##### Methods 
-`.normalize(self, file_name: str) -> str`
-
-    The method's action depends on the policy set in __init__
-    
-    Available policies:
-    - `hide` - replaces all fobidden characteds with `_`.
-    - `raise` - raises `InvalidListname(OSError)` exception.
 
 
 ## Example
@@ -80,7 +65,7 @@ Base usage
 from lists import ListsManager
 
 user_id = ...
-lists_manager = ListsManager("/var/lists/", name_normalize_policy="hide")
+lists_manager = ListsManager("/var/lists/")
 black_list = lists_manager.get("black_list")
 if black_list is None:
     black_list = lists_manager.create("black_list")
@@ -99,4 +84,6 @@ else:
 `uv run pytest --benchmark-only --benchmark-warmup=true`
 
 ## Changelog
-Nope
+- The backend has been rewritten from files to sqlite.
+    - speed has increased.
+    - size of the list files also has increased :smiling_face_with_tear:.

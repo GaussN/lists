@@ -20,7 +20,7 @@ dev = [
 ]
 
 [tool.pytest.ini_options]
-addopts = ""
+addopts = "--benchmark-skip"
 testpaths = "tests"
 python_files = "test_*.py"
 python_functions = "test_*"

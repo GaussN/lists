@@ -56,7 +56,7 @@ class ListManager(object):
             bool: True if the item removed,
                     if the item is not in the list - False
         """
-        # TODO : dont rewrite full file
+        # TODO : dont rewrite file
         items: set
         with open(self.__list_path, "rt") as file:
             items = set(file.readlines())

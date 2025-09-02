@@ -12,7 +12,7 @@ class _ListnameNormalizer(object):
     """Check if file name contains forbbiden characters.
 
     There are two strategies:
-        raise - throw `InvalidListname` if string contains forbbiden chars.
+        raise - throw `InvalidListname` if string contains forbidden chars.
         hide - set foebbiden chars to `_`.
     """
 

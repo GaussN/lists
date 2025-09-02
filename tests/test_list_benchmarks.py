@@ -20,21 +20,15 @@ def _setup_random_item():
 
 
 @pytest.mark.benchmark(group="add")
-def test_add_items_in_empty_list_benchmark(benchmark, list_path):
-    lm = ListManager(list_path)
-    benchmark.pedantic(lm.add, setup=_setup_random_item, rounds=1000)
-
-
-@pytest.mark.benchmark(group="add")
-def test_add_items_in_non_empty_list_benchmark(benchmark, lm):
+def test_add_benchmark(benchmark, lm):
     benchmark.pedantic(lm.add, setup=_setup_random_item, rounds=1000)
 
 
 @pytest.mark.benchmark(group="has")
-def test_has_items_benchmark(benchmark, lm):
+def test_has_benchmark(benchmark, lm):
     benchmark.pedantic(lm.has, setup=_setup_random_item, rounds=1000)
 
 
 @pytest.mark.benchmark(group="remove")
-def test_remove_items_benchmark(benchmark, lm):
+def test_remove_benchmark(benchmark, lm):
     benchmark.pedantic(lm.remove, setup=_setup_random_item, rounds=1000)

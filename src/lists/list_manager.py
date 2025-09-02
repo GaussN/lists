@@ -1,6 +1,8 @@
 import os.path
 import pathlib
 
+from lists.exceptions import ListNotFound
+
 
 def _kmp_prefix(string: str) -> list:
     mask = [0] * len(string)
@@ -19,7 +21,7 @@ class ListManager(object):
 
     def __init__(self, list_path: str):
         if not os.path.exists(list_path):
-            raise FileNotFoundError(list_path)
+            raise ListNotFound(list_path)
         self.__list_path = list_path
         self.__list_name = str(self.__list_path).split(os.path.sep)[-1]
 

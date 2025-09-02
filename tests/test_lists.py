@@ -1,6 +1,11 @@
 import pytest
 
-from lists.exceptions import ListIsNotEmpty
+from lists.exceptions import (
+    InvalidListname,
+    ListAlreadyExists,
+    ListIsNotEmpty,
+    ListNotFound,
+)
 from lists.lists_manager import ListsManager
 
 
@@ -21,7 +26,7 @@ def test_incorrect_path():
 
 def test_getitem_invalid(lists_path):
     lsm = ListsManager(lists_path, "raise")
-    with pytest.raises(KeyError):
+    with pytest.raises(ListNotFound):
         lsm["fake.list"]
 
 
@@ -51,7 +56,7 @@ def test_create(lists_path):
 
 def test_create_exists_raise(lists_path, list_path):
     lsm = ListsManager(lists_path, "raise")
-    with pytest.raises(FileExistsError):
+    with pytest.raises(ListAlreadyExists):
         lm = lsm.create(list_path.name, raise_if_exists=True)
 
 
@@ -86,5 +91,5 @@ def test_remove_non_exists_ignore(lists_path):
 
 def test_remove_non_exists_raise(lists_path):
     lsm = ListsManager(lists_path, "raise")
-    with pytest.raises(FileNotFoundError):
+    with pytest.raises(ListNotFound):
         lsm.remove("fake.list", raise_if_not_exists=True)

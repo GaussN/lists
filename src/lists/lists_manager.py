@@ -9,7 +9,11 @@ from typing import (
 
 from lists.normalizer import _ListnameNormalizer
 from lists.list_manager import ListManager
-from lists.exceptions import ListIsNotEmpty
+from lists.exceptions import (
+    ListAlreadyExists,
+    ListIsNotEmpty,
+    ListNotFound,
+)
 
 
 logger = logging.getLogger(__name__)
@@ -43,16 +47,15 @@ class ListsManager(object):
         list_name = self.__normalizer.normalize(list_name)
         list_path = os.path.join(self.__lists_path, list_name)
         if not os.path.exists(list_path):
-            raise KeyError(list_path)
+            raise ListNotFound(list_path)
         return ListManager(list_path)
 
     def get(self, list_name: str) -> Optional[ListManager]:
         """Returns `ListManager` instance or None."""
-        list_name = self.__normalizer.normalize(list_name)
-        list_path = self.__lists_path / list_name
-        if os.path.exists(list_path):
-            return ListManager(list_path)
-        return None
+        try:
+            return self[list_name]
+        except ListNotFound:
+            return None
 
     def create(self, list_name: str, raise_if_exists: bool = False) -> ListManager:
         """Create and return `ListManager` instance."""
@@ -63,9 +66,7 @@ class ListsManager(object):
                 pass
             return ListManager(self.__lists_path / list_name)
         if raise_if_exists:
-            raise FileExistsError(list_name)
-        import warnings
-
+            raise ListAlreadyExists(list_name)
         logger.warning('create: list "%s" already exists', list_name)
         return lm
 
@@ -83,5 +84,5 @@ class ListsManager(object):
             os.remove(list_path)
         except FileNotFoundError:
             if raise_if_not_exists:
-                raise
+                raise ListNotFound(list_name)
             logger.warning('remove: list "%s" doesn\'t exists', list_name)

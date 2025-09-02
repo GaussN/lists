@@ -4,6 +4,12 @@ import pathlib
 
 import pytest
 
+from lists.exceptions import (
+    InvalidListname,
+    ListAlreadyExists,
+    ListIsNotEmpty,
+    ListNotFound,
+)
 from lists.list_manager import ListManager
 
 
@@ -11,7 +17,7 @@ logger = logging.getLogger(__name__)
 
 
 def test_get_invalid_list(lists_path):
-    with pytest.raises(FileNotFoundError):
+    with pytest.raises(ListNotFound):
         ListManager(lists_path / "fake_list.list")
 
 

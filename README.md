@@ -18,12 +18,8 @@ Interface to files with data in list view.
 
 `__getitem__(self, list_name: str) -> ListManager`
 
-    params:
-        `items` - list name.
     raises: 
-        `KeyError` - if list with given name doesn't exists.
-    returns:
-        `ListManager` for given list.
+        `ListNotFound` - if list with given name doesn't exists.
 
 `.get(self, item: str) -> Optional[ListManager]`
 
@@ -32,13 +28,13 @@ Interface to files with data in list view.
 
 `.create(self, list_name: str, raise_if_exists: bool = False) -> ListManager`
 
-    Returns the created list or, if `raise_if_exists` is set to `False`, existing list, otherwise raises `FileExistsError`.
+    Returns the created list or, if `raise_if_exists` is set to `False`, existing list, otherwise raises `ListAlreadyExists`.
 
 `.remove(self, list_name: str, force: bool = False, raise_if_not_exists: bool = False) -> None`
 
     raises:
         `ListIsNotEmpty` - if the list contains some content and `force` is set False.
-        `FileNotFoundError` - if `raise_if_not_exists` is set True and list file doesn't exists.
+        `ListNotFound` - if `raise_if_not_exists` is set True and list file doesn't exists.
 
 #### ListManager
 ##### Methods
@@ -71,7 +67,7 @@ For Windows: `<` , `>` , `:` , `"` , `/` , `\` , `?` , `*` , `|` , `CON` , `PRN`
     
     Available policies:
     - `hide` - replaces all fobidden characteds with `_`.
-    - `raise` - raises `InvalidListname(OSError)` exception.
+    - `raise` - raises `InvalidListname` exception.
 
 
 ## Example

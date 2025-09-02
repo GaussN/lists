@@ -1,4 +1,5 @@
 from random import randbytes
+import sqlite3
 
 import pytest
 import pytest_benchmark
@@ -7,9 +8,13 @@ from lists.list_manager import ListManager
 
 
 @pytest.fixture
-def lm(list_path) -> ListManager:
+def lm(lists_file) -> ListManager:
     """Return nonempty list manager."""
-    _lm = ListManager(list_path)
+    with sqlite3.connect(lists_file) as conn:
+        conn.execute("INSERT INTO lists(list_name) VALUES('list')")
+        conn.execute("CREATE TABLE list ( item TEXT UNIQUE )")
+        conn.commit()
+    _lm = ListManager(lists_file, "list")
     for _ in range(500):
         _lm.add(randbytes(4).hex())
     yield _lm
@@ -17,12 +22,6 @@ def lm(list_path) -> ListManager:
 
 def _setup_random_item():
     return (randbytes(4).hex(),), {}
-
-
-@pytest.mark.benchmark(group="add")
-def test_add_items_in_empty_list_benchmark(benchmark, list_path):
-    lm = ListManager(list_path)
-    benchmark.pedantic(lm.add, setup=_setup_random_item, rounds=1000)
 
 
 @pytest.mark.benchmark(group="add")

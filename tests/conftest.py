@@ -2,6 +2,7 @@
 import os
 import pathlib
 import shutil
+import sqlite3
 
 import pytest
 
@@ -16,9 +17,10 @@ def lists_path(tmp_path) -> pathlib.Path:
 
 
 @pytest.fixture
-def list_path(lists_path) -> pathlib.Path:
-    _list_path = lists_path / "test.list"
-    _list_path.open("wt").close()
-    yield _list_path
-    if _list_path.exists():
-        os.unlink(_list_path)
+def lists_file(lists_path) -> pathlib.Path:
+    _path = lists_path / ".lists.db"
+    with sqlite3.connect(_path) as conn:
+        conn.executescript("CREATE TABLE IF NOT EXISTS lists( list_name TEXT UNIQUE )")
+        conn.commit()
+    yield _path
+    os.remove(_path)

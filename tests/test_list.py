@@ -1,6 +1,7 @@
 import logging
 import os
 import pathlib
+import sqlite3
 
 import pytest
 
@@ -10,19 +11,29 @@ from lists.list_manager import ListManager
 logger = logging.getLogger(__name__)
 
 
-def test_get_invalid_list(lists_path):
+def test_get_invalid_list(lists_file):
     with pytest.raises(FileNotFoundError):
-        ListManager(lists_path / "fake_list.list")
+        ListManager(lists_file, "fake_list")
 
 
-def test_get_valid_list(list_path):
-    ListManager(list_path)
+def test_get_valid_list(lists_file):
+    with sqlite3.connect(lists_file) as conn:
+        conn.execute("INSERT INTO lists(list_name) VALUES('test_list')")
+        conn.execute("CREATE TABLE test_list (item TEXT UNIQUE)")
+        conn.commit()
+    ListManager(lists_file, "test_list")
 
 
-def test_has_items(list_path):
-    list_path.write_text("item1\nitem2\nitem3")
+def test_has_items(lists_file):
+    with sqlite3.connect(lists_file) as conn:
+        conn.execute("INSERT INTO lists(list_name) VALUES('test_list')")
+        conn.execute("CREATE TABLE test_list (item TEXT UNIQUE)")
+        conn.commit()
+    lm = ListManager(lists_file, "test_list")
 
-    lm = ListManager(list_path)
+    lm.add("item1")
+    lm.add("item2")
+    lm.add("item3")
 
     assert lm.has("item1")
     assert lm.has("item2")
@@ -30,17 +41,27 @@ def test_has_items(list_path):
     assert not lm.has("item4")
 
 
-def test_add_items(list_path):
-    lm = ListManager(list_path)
+def test_add_items(lists_file):
+    with sqlite3.connect(lists_file) as conn:
+        conn.execute("INSERT INTO lists(list_name) VALUES('test_list')")
+        conn.execute("CREATE TABLE test_list (item TEXT UNIQUE)")
+        conn.commit()
+    lm = ListManager(lists_file, "test_list")
+
     assert lm.add("item1")
     assert lm.add("item2")
     assert lm.add("item3")
+    # logger.info(f"{lists_file=}")
+    # input(lm.list_name)
     assert not lm.add("item3")
-    assert list_path.read_text() == "item1\nitem2\nitem3\n"
 
 
-def test_remove_items(list_path):
-    lm = ListManager(list_path)
+def test_remove_items(lists_file):
+    with sqlite3.connect(lists_file) as conn:
+        conn.execute("INSERT INTO lists(list_name) VALUES('test_list')")
+        conn.execute("CREATE TABLE test_list (item TEXT UNIQUE)")
+        conn.commit()
+    lm = ListManager(lists_file, "test_list")
     lm.add("item1")
     lm.add("item2")
     lm.add("item3")

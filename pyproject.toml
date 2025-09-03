@@ -4,8 +4,9 @@ version = "0.1.0"
 description = "simple list view database"
 readme = "README.md"
 authors = [
-    { name = "mikita", email = "" }
+    { name = "mikita" }
 ]
+license = "MIT"
 requires-python = ">=3.13"
 dependencies = []
 

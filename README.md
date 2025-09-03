@@ -95,4 +95,5 @@ else:
 `uv run pytest --benchmark-only --benchmark-warmup=true`
 
 ## Changelog
-Nope
+- Resource consumption decreased.
+- Prductivity also decreased.

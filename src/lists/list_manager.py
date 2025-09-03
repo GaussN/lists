@@ -36,10 +36,10 @@ class ListManager(object):
     def __str__(self):
         return f"{self.__class__.__name__}({self.__lists_path.split(os.path.sep)[-1]})"
 
-    def has(self, item: str) -> bool:
-        """Is item in the list."""
+    def __has(self, item: str) -> int:
         item += "\n"
         item_prefix = _kmp_prefix(item)
+        i = 1
         with open(self.__list_path, "r") as file:
             char = file.read(1)
             j = 0
@@ -49,7 +49,15 @@ class ListManager(object):
                 if char == item[j]:
                     j += 1
                 char = file.read(1)
-        return j == len(item) - 1
+                i += 1
+            # pattern = item + \n
+            # so pattern position is i(end of comparing) - len(item+\n) - 1
+            #                                           or len(item)
+            return i - len(item) if j == len(item) - 1 else -1
+
+    def has(self, item: str) -> bool:
+        """Is item in the list."""
+        return self.__has(item) != -1
 
     def remove(self, item: str) -> bool:
         """Remove item from the list.
@@ -58,16 +66,12 @@ class ListManager(object):
             bool: True if the item removed,
                     if the item is not in the list - False
         """
-        # TODO : dont rewrite file
-        items: set
-        with open(self.__list_path, "rt") as file:
-            items = set(file.readlines())
-        try:
-            items.remove(item + "\n")
-        except KeyError:
+        pos = self.__has(item)
+        if pos == -1:
             return False
-        with open(self.__list_path, "wt") as file:
-            file.writelines(items)
+        with open(self.__list_path, "rt+") as file:
+            file.seek(pos)
+            file.truncate(len(item) + 1)
         return True
 
     def add(self, item: str) -> bool:

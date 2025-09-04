@@ -4,18 +4,6 @@ import pathlib
 from lists.exceptions import ListNotFound
 
 
-def _kmp_prefix(string: str) -> list:
-    mask = [0] * len(string)
-    ci = 0
-    for i in range(1, len(string)):
-        while ci > 0 and string[ci] != string[i]:
-            ci = mask[ci - 1]
-        if string[ci] == string[i]:
-            ci += 1
-        mask[i] = ci
-    return mask
-
-
 class ListManager(object):
     """Basic operations with list."""
 
@@ -38,16 +26,20 @@ class ListManager(object):
 
     def __has(self, item: str) -> int:
         item += "\n"
-        item_prefix = _kmp_prefix(item)
         i = 1
         with open(self.__list_path, "r") as file:
             char = file.read(1)
             j = 0
             while char and j < len(item) - 1:
-                while j > 0 and char != item[j]:
-                    j = item_prefix[j - 1]
-                if char == item[j]:
+                if item[j] == char:
+                    char = file.read(1)
+                    i += 1
                     j += 1
+                    continue 
+                j = 0
+                while char and char != "\n":
+                    char = file.read(1)
+                    i += 1
                 char = file.read(1)
                 i += 1
             # pattern = item + \n

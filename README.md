@@ -95,3 +95,5 @@ else:
 `uv run pytest --benchmark-only --benchmark-warmup=true`
 
 ## Changelog
+- pattern search algo
+- speed increased

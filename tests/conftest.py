@@ -27,4 +27,3 @@ def lists_manager(lists_path) -> ListsManager:
 def list_manager(lists_manager) -> ListManager:
     _lm = lists_manager.create("test.list")
     yield _lm
-

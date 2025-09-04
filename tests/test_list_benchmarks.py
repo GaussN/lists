@@ -7,12 +7,11 @@ from lists.list_manager import ListManager
 
 
 @pytest.fixture
-def lm(list_path) -> ListManager:
+def lm(list_manager) -> ListManager:
     """Return nonempty list manager."""
-    _lm = ListManager(list_path)
     for _ in range(500):
-        _lm.add(randbytes(4).hex())
-    yield _lm
+        list_manager.add(randbytes(4).hex())
+    yield list_manager
 
 
 def _setup_random_item():

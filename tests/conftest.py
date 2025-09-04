@@ -1,9 +1,11 @@
-# abcdefghijklmnopqrstuvwxyz
 import os
 import pathlib
 import shutil
 
 import pytest
+
+from lists.list_manager import ListManager
+from lists.lists_manager import ListsManager
 
 
 @pytest.fixture
@@ -16,9 +18,13 @@ def lists_path(tmp_path) -> pathlib.Path:
 
 
 @pytest.fixture
-def list_path(lists_path) -> pathlib.Path:
-    _list_path = lists_path / "test.list"
-    _list_path.open("wt").close()
-    yield _list_path
-    if _list_path.exists():
-        os.unlink(_list_path)
+def lists_manager(lists_path) -> ListsManager:
+    _lsm = ListsManager(lists_path)
+    yield _lsm
+
+
+@pytest.fixture
+def list_manager(lists_manager) -> ListManager:
+    _lm = lists_manager.create("test.list")
+    yield _lm
+

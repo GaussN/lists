@@ -24,72 +24,60 @@ def test_incorrect_path():
         ListsManager("fake_path", "raise")
 
 
-def test_getitem_invalid(lists_path):
-    lsm = ListsManager(lists_path, "raise")
+def test_getitem_invalid(lists_manager):
     with pytest.raises(ListNotFound):
-        lsm["fake.list"]
+        lists_manager["fake.list"]
 
 
-def test_get_invalid(lists_path):
-    lsm = ListsManager(lists_path, "raise")
-    assert lsm.get("fake.test") is None
+def test_get_invalid(lists_manager):
+    assert lists_manager.get("fake.test") is None
 
 
-def test_getitem_valid(lists_path, list_path):
-    lsm = ListsManager(lists_path, "raise")
-    lm = lsm[list_path.name]
-    assert lm.list_name == list_path.name
+def test_getitem_valid(lists_manager, list_manager):
+    lm = lists_manager[list_manager.list_name]
+    assert lm.list_name == list_manager.list_name
 
 
-def test_get_valid(lists_path, list_path):
-    lsm = ListsManager(lists_path, "raise")
-    lm = lsm.get(list_path.name)
+def test_get_valid(lists_manager, list_manager):
+    lm = lists_manager.get(list_manager.list_name)
     assert lm is not None
-    assert lm.list_name == list_path.name
+    assert lm.list_name == list_manager.list_name
 
 
-def test_create(lists_path):
-    lsm = ListsManager(lists_path, "raise")
-    lm = lsm.create("new.list", raise_if_exists=True)
+def test_create(lists_manager):
+    lm = lists_manager.create("new.list", raise_if_exists=True)
     assert lm.list_name == "new.list"
 
 
-def test_create_exists_raise(lists_path, list_path):
-    lsm = ListsManager(lists_path, "raise")
+def test_create_exists_raise(lists_manager, list_manager):
     with pytest.raises(ListAlreadyExists):
-        lm = lsm.create(list_path.name, raise_if_exists=True)
+        lm = lists_manager.create(list_manager.list_name, raise_if_exists=True)
 
 
-def test_create_exists_ignore(lists_path, list_path):
-    lsm = ListsManager(lists_path, "raise")
-    lm = lsm.create(list_path.name, raise_if_exists=False)
-    assert lm.list_name == list_path.name
+def test_create_exists_ignore(lists_manager, list_manager):
+    lm = lists_manager.create(list_manager.list_name, raise_if_exists=False)
+    assert lm.list_name == list_manager.list_name
 
 
-def test_remove_empty(lists_path, list_path):
-    lsm = ListsManager(lists_path, "raise")
-    lsm.remove(list_path.name)
+def test_remove_empty(lists_manager, list_manager):
+    lists_manager.remove(list_manager.list_name)
 
 
-def test_remove_not_empty(lists_path, list_path):
-    lsm = ListsManager(lists_path, "raise")
-    lm = lsm[list_path.name]
+def test_remove_not_empty(lists_manager, list_manager):
+    lm = lists_manager[list_manager.list_name]
     lm.add("item1")
     with pytest.raises(ListIsNotEmpty):
-        lsm.remove(list_path.name)
+        lists_manager.remove(list_manager.list_name)
 
 
-def test_remove_not_empty_force(lists_path, list_path):
-    lsm = ListsManager(lists_path, "raise")
-    lsm.remove(list_path.name, force=True)
+def test_remove_not_empty_force(lists_manager, list_manager):
+    lists_manager.remove(list_manager.list_name, force=True)
 
 
-def test_remove_non_exists_ignore(lists_path):
-    lsm = ListsManager(lists_path, "raise")
-    lsm.remove("fake.list", raise_if_not_exists=False)
+def test_remove_non_exists_ignore(lists_manager):
+    lists_manager.remove("fake.list", raise_if_not_exists=False)
 
 
-def test_remove_non_exists_raise(lists_path):
-    lsm = ListsManager(lists_path, "raise")
+def test_remove_non_exists_raise(lists_manager):
     with pytest.raises(ListNotFound):
-        lsm.remove("fake.list", raise_if_not_exists=True)
+        lists_manager.remove("fake.list", raise_if_not_exists=True)
